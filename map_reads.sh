@@ -21,7 +21,7 @@ mapdir=$base_dir/Mapped_Reads
 shortname=$(echo $filename |cut -d_ -f1-2)
 
 #This is where the problem is!
-bowtie2 -p 4 -X 2000 -x $index -1 $basedir/$trimdir/$filename -1  2> $basedir/$mapdir/$shortname.bowtie.mapping.log.txt |  #Create a log of reads that map and reads that don't
+bowtie2 -p 4 -X 2000 -x $index -1 $basedir/$trimdir/$filename -2 $basedir/$trimdir/$filename2 2> $basedir/$mapdir/$shortname.bowtie.mapping.log.txt |  \ #Create a log of reads that map and reads that don't
 samtools view -bS - > $basedir/$mapdir/$shortname.mapped.bam #Create a bam file
 samtools sort -@ 4 -m 2G -T $basedir/$mapdir/temp -o $basedir/$mapdir/temp1.bam $basedir/$mapdir/$shortname.mapped.bam
 
