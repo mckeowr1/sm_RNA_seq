@@ -57,21 +57,32 @@ path to DM6 Index:  `/Volumes/BlytheLab_Files/HTSeq/Bowtie_Indices/dm6`
 
 
 
-#Don't mark duplicates w/ picard tools 
+#Don't remove duplicates w/ picard tools 
 
 
-# Need to build Bowtie Indices for Larracuente 2017
+# Getting a list of what maps and what doesn't 
+#What doesn't Map 
+--un/--un-conc (possibly with -gz or -bz2); This triggers --un parameter for single reads and --un-conc for paired reads
+
+#What Maps
+--al/--al-conc (possibly with -gz or -bz2); This triggers --al parameter for single reads and --al-conc for paired reads
+
 
 
 bowtie build manual 
 
 
 
+# Need to build Bowtie Indices for Larracuente 2017
 
 path to RepBase Genome `afp://blythelabnas.mbs.northwestern.edu/BlytheLab_Files/HTSeq/Genomes/Drosophila_Repbase_Khost_Larracuente_2017` 
 
 
 
+#Post-Bam Pipline
 
+1) Sam tools index & Marked Duplicate BAM 
+2) R to calculate genome coverage
+    3) Width of mapping reads
 
-
+#Vizualing Larracuente   
