@@ -1,13 +1,13 @@
 #!/bin/sh
 
 basedir=$1
-
-cd basedir
+file=$2
+cd $basedir
 
 mkdir Trimmed_Reads 
 
 
-rawdir=Raw_Data 
+#rawdir=Raw_Data 
 trimdir=Trimmed_Reads
 
 
@@ -26,7 +26,7 @@ source /Applications/TrimGaloreEnv/bin/activate
 #######################
 
 
-trim_galore -o $basedir/$trimdir --gzip --fastqc $file 
+trim_galore -o $trimdir --gzip --fastqc $file 
 
 
 #for file in $basedir/$rawdir/*.fastq.gz
