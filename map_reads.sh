@@ -50,7 +50,7 @@ M=$mapdir/$shortname.dup.metrics.txt
 rm $mapdir/temp1.bam $mapdir/temp2.bam $mapdir/$shortname.mapped.bam
 
 samtools index $mapdir/$shortname.mapped.md.bam
-done
+
 
 #conda deactivate
 

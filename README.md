@@ -43,8 +43,11 @@ Conda Env
 `bowtie2 2.4.4`
 
 `conda activate mappers`
+# Run bowtie with basically default settings
 `bash map_reads.sh project_dir path/to/bt_index FASTQ_file` 
 
+# Run bowtie and report all mappings with basically default settings
+`bash map_multi_reads.sh project_dir path/to/bt_index FASTQ_file`
 
 project
     Raw_Data
