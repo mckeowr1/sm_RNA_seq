@@ -39,6 +39,16 @@ project
 
 ## Mapping Reads 
 
+Conda Env
+`bowtie2 2.4.4`
+
+`conda activate mappers`
+# Run bowtie with basically default settings
+`bash map_reads.sh project_dir path/to/bt_index FASTQ_file` 
+
+# Run bowtie and report all mappings with basically default settings
+`bash map_multi_reads.sh project_dir path/to/bt_index FASTQ_file`
+
 project
     Raw_Data
     Trimmed_Reads
@@ -49,16 +59,33 @@ project
 path to DM6 Index:  `/Volumes/BlytheLab_Files/HTSeq/Bowtie_Indices/dm6` 
 
 
-# Need to build Bowtie Indices for Larracuente 2017
+
+#Don't remove duplicates w/ picard tools 
+
+
+# Getting a list of what maps and what doesn't 
+#What doesn't Map 
+--un/--un-conc (possibly with -gz or -bz2); This triggers --un parameter for single reads and --un-conc for paired reads
+
+#What Maps
+--al/--al-conc (possibly with -gz or -bz2); This triggers --al parameter for single reads and --al-conc for paired reads
+
 
 
 bowtie build manual 
 
 
+
+# Need to build Bowtie Indices for Larracuente 2017
+
 path to RepBase Genome `afp://blythelabnas.mbs.northwestern.edu/BlytheLab_Files/HTSeq/Genomes/Drosophila_Repbase_Khost_Larracuente_2017` 
 
 
 
+#Post-Bam Pipline
 
+1) Sam tools index & Marked Duplicate BAM 
+2) R to calculate genome coverage
+    3) Width of mapping reads
 
-
+#Vizualing Larracuente   
