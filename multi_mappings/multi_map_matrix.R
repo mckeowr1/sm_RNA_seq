@@ -1,3 +1,5 @@
+
+
 require(GenomicAlignments)
 require(BSgenome.Dmelanogaster.UCSC.dm6)
 dm6 = Dmelanogaster
@@ -17,6 +19,49 @@ allreads = readGAlignments("SRR1187947.57.bam",
                            param = ScanBamParam(flag = scanBamFlag(isSecondaryAlignment = TRUE, isUnmappedQuery = FALSE), 
                                                 what = c('flag','mpos','mapq','isize')),
                            use.names = TRUE)
+files <- list.files("42AB_Lines", pattern ="*.bed", full.names = T) 
+
+### Convert Bed to GRANGES ###
+library(bedr)
+bed <- bed_to_granges("42AB_Lines/SRR1187947.57_lines.txt.bed")
+
+test_ranges <- lapply(
+  files, 
+  function(x) {
+    a = bed_to_granges(x)
+    b = countOverlaps(bins, a)
+  return(b)
+  }
+)
+
+test_matrix = do.call("cbind", test_ranges)
+
+a <- bed_to_granges(files[2])
+b = countOverlaps(bins, a)
+
+#image(test_matrix[100000:300000,])
+
+#Compare to on 10 bed files 
+#gRanges List on all of the bed files 
+all_bed <- GRangesList(lapply, filenames, 
+                       function(x){
+                         a = bed_to_bam(x)
+                       }) 
+
+countOverlaps
+
+#Apply to a mat
+z <- matrix(0, length(bins), 1) #Define the matrix length length of binned genomes
+z[subjectHits(findOverlaps(bed, bins)),1] <- 1 #set the matrix value based
+colnames(z) <- paste0("gr.", 1)
+mcols(bins) <- z
+show(bins)
+
+
+test <- countOverlaps(bins, bed)
+
+
+
 
 
 cat('filtering out reads on non-canonical chromosomes.\n')
