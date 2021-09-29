@@ -50,7 +50,7 @@ samtools view $roiname.multi_mapping.sam| cut -f1 | sort | uniq -u > $roiname-mu
 # grep -w 'SRR1187947.7788'  
 
 #This step may need to get alot faster! - 
-samtools view SRR1187947_mapped_verysensitive_local.mapped.bam | grep -w SRR1187947.57 > SRR1187947_read.sam
+#samtools view SRR1187947_mapped_verysensitive_local.mapped.bam | grep -w SRR1187947.57 > SRR1187947_read.sam
 
 #Picard 
 
@@ -59,17 +59,17 @@ samtools view SRR1187947_mapped_verysensitive_local.mapped.bam | grep -w SRR1187
 # O=$mapdir/$shortname.mapped.md.bam \
 # M=$mapdir/$shortname.dup.metrics.txt
 
-java -jar /Applications/picard.jar FilterSamReads \
-I=SRR1187947_mapped_verysensitive_local.mapped.bam \
-O=output.bam \
-READ_LIST_FILE=read.txt \
-FILTER=includeReadList
+# java -jar /Applications/picard.jar FilterSamReads \
+# I=SRR1187947_mapped_verysensitive_local.mapped.bam \
+# O=output.bam \
+# READ_LIST_FILE=read.txt \
+# FILTER=includeReadList
 
 ##Take the read BAM and Intersect with a GFF ## 
 
 #Output a GFF file with regions that the reads in the BAM overlap with 
 
 
-bedtools intersect -a rev2.gff -b SRR1187947.57.bam -wa 
+#bedtools intersect -a rev2.gff -b SRR1187947.57.bam -wa 
 
-head -n 28100000
+#head -n 28100000

@@ -1,7 +1,7 @@
 
 
-require(GenomicAlignments)
-require(BSgenome.Dmelanogaster.UCSC.dm6)
+library(GenomicAlignments)
+library(BSgenome.Dmelanogaster.UCSC.dm6)
 dm6 = Dmelanogaster
 
 shortname = substring(file,tail(gregexpr('[/]',file)[[1]],1)+1,nchar(file))
@@ -19,7 +19,10 @@ allreads = readGAlignments("SRR1187947.57.bam",
                            param = ScanBamParam(flag = scanBamFlag(isSecondaryAlignment = TRUE, isUnmappedQuery = FALSE), 
                                                 what = c('flag','mpos','mapq','isize')),
                            use.names = TRUE)
+setwd("/Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings")
+
 files <- list.files("42AB_Lines", pattern ="*.bed", full.names = T) 
+files <- files[1:100]
 
 ### Convert Bed to GRANGES ###
 library(bedr)
@@ -61,8 +64,23 @@ show(bins)
 test <- countOverlaps(bins, bed)
 
 
+### Region Specific Matrix ### 
+
+#Take the Drosohila Reference Genome 
+bins 
+#Subset it for the particular region of interest(ex 42AB)
+
+#Bin that region of interest
 
 
+seqnames(bins)
+
+forty=GRanges(seqnames =c("chr2R"), 
+              ranges=IRanges(start =c(6255432), end=c(6499291)))
+
+subsetByOverlaps(forty, bins)
+
+forty_t=tileGenome(forty, tilewidth = 100, cut.last.tile.in.chrom = TRUE)
 
 cat('filtering out reads on non-canonical chromosomes.\n')
 init = length(allreads)
@@ -78,9 +96,14 @@ read_names <- unique(names(multi_reads))
 ranges <- ranges(multi_reads)
 
 
-bins = tileGenome(seqlengths(Dmelanogaster), tilewidth = 100, cut.last.tile.in.chrom = TRUE)
+
+####Tiled 42AB region! 
+subsetByOverlaps(bins, forty)
+
+
+bins = tileGenome(seqlengths(Dmelanogaster), tilewidth = 10, cut.last.tile.in.chrom = TRUE)
 bins = bins[seqnames(bins) %in% paste0('chr', c('2L','2R','3L','3R','4','X'))] # this can be commented out if you want to keep all chromosomes/contigs.
-bins = bins[width(bins) == 100] 
+bins = bins[width(bins) == 10] 
 
 
 

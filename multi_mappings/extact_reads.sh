@@ -4,7 +4,7 @@ for filename in /Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/42AB_Line
 do
 echo $filename
 
-/Users/ryan/filterline/filterline $filename files/SRR1187947_mapped_verysensitive_local.mapped.bed > $filename.bed
+/Users/ryan/filterline/filterline $filename /Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/files/SRR1187947_mapped_verysensitive_local.mapped.bed > $filename.bed
 
 
 done
