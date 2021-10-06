@@ -4,6 +4,7 @@
 
 basedir=$1 #A project directory that contains a Mapped Reads file with a BAM in it (Not marked for duplicates)
 bed=$2 #A bed file that contains the regions of interest
+sam=$3 #A all reads sam file
 
 #Get the name of the bead file
 roiname=$(echo $bed | cut -d. -f1)
@@ -13,16 +14,16 @@ mkdir $roiname #Make a directory for the region of interest
 cd $basedir
 
 #If we are looking for a particular strand this may not work! 
-samtools view -h -L $bed SRR1187947_mapped_verysensitive_local.mapped.bam > $roiname.sam
+samtools view -h -L $bed $sam > $roiname.sam
 
 #Trying with bedtools 
 #bedtools intersect -abam SRR1187947_mapped_verysensitive_local.mapped.bam -b 42AB.bed -ubam
 
 #Check if the file is empty?
-head_size=$(samtools view -H SRR1187947_mapped_verysensitive_local.mapped.bam | wc -l)
-echo "There are" $head_size "lines in the header"
+#head_size=$(samtools view -H SRR1187947_mapped_verysensitive_local.mapped.bam | wc -l)
+#echo "There are" $head_size "lines in the header"
 
-roi_bam_size=$(samtools view -H SRR1187947_mapped_verysensitive_local.mapped.bam | wc -l)
+#roi_bam_size=$(samtools view -H SRR1187947_mapped_verysensitive_local.mapped.bam | wc -l)
 ##Where else do reads map## 
 
 #Subset the reads that have equally as good mappings
@@ -34,7 +35,7 @@ roi_bam_size=$(samtools view -H SRR1187947_mapped_verysensitive_local.mapped.bam
 #Potentially implement a quality matching 
 
 #Get all Non-Primary Mapping Reads in the region
-samtools view -h -f 256 $roiname.sam > $roiname.multi_mapping.sam
+#samtools view -h -f 256 $roiname.sam > $roiname.multi_mapping.sam
 
 #Spit out a list of read names
 samtools view $roiname.multi_mapping.sam| cut -f1 | sort | uniq -u > $roiname-multimapping_read_names.txt
