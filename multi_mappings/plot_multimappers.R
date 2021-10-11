@@ -47,4 +47,26 @@ forty=GRanges(seqnames =c("chr2R"),
 forty_matrix = countOverlaps(bins, forty)
 
 
+setwd("/Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/annotation_data/")
+
+library(tidyverse)
+high_ov <- data.table::fread("extremly_highovary.txt") %>%  
+  mutate(LOCATION_ARM = str_c("chr", high_ov$LOCATION_ARM)) #Add chr to the location arm so that it can be intersected
+  
+
+hi_ov_gr <- makeGRangesFromDataFrame(high_ov, 
+                         seqnames.field = "LOCATION_ARM", 
+                         start.field = "LOCATION_MIN", 
+                         end.field = "LOCATION_MAX")
+
+df <- countOverlaps(bins, hi_ov_gr) %>%  as.data.frame() %>%  
+  rownames_to_column() %>%  
+  mutate(color = ifelse( . >= 1, "#FF0000", "#FFFF00")) 
+
+colors <- df$color  
+
+
+heatmap(matrix, Colv = NA, Rowv = NA, RowSideColors = colors)
+
+
 

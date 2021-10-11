@@ -4,7 +4,7 @@ library(bedr)
 dm6 = Dmelanogaster
 
 
-setwd("/Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/42AB")
+setwd("/Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/42AB_test")
 
 #### Setup the Reference Genome & The ROI Genome ####
 
@@ -27,7 +27,7 @@ roi_t$binID = 1:length(roi_t)
 #### Assign Reads to BIN ####
 
 #Read in Region BED 
-roi_bed <- bed_to_granges("roi_bed/42AB.bed")
+roi_bed <- bed_to_granges("bed_roi/42AB.bed")
 
 #sm_bed <- head(roi_bed, n= 1000)
 
@@ -53,7 +53,7 @@ library(tidyverse)
 #
 df <- overlaps[c(2, 4)] %>% as.data.frame()
 
-reads_in_bin <- df %>% group_by(binID) %>% 
+reads_in_bin <- df %>% group_by(binID) %>% #Unlist the readnames 
   summarize(reads = paste0(as.character(id), collapse = ",")) 
 
 
@@ -81,22 +81,11 @@ for(read in 1:nrow(reads_in_bin)){
   }
 
 
-test_file <- reads_in_bin[10,]
-write_readnames_binned(test_file)
+# test_file <- reads_in_bin[10,]
+# write_readnames_binned(test_file)
 
 
 
-
-file_name <- test_file[1]
-reads <- as.character(test_file[,2]) %>%  
-  str_split(pattern = ",") 
-
-writeLines(reads, glue::glue("bin{file_name}.txt"))
-
-#write_tsv(reads_in_bin, "SRR1187947_mapped_verysensitive_local.mapped.bedindex.tsv")
-
-
-writeLines(reads, "test")
 
 
 
