@@ -11,3 +11,13 @@ multi_mappings/42AB
 multi_mappings/search_beds
 .RData
 .RHistory
+multi_mappings/histone_cluster
+mirRNA/reads_collapsed.fa
+mirRNA/reads_collapsed_vs_genome.arf
+mirRNA/SRR1187947_trimmed.fq.gz.mapped.md.reads.arf 
+mirRNA/SRR1187947_trimmed.fq.gz.mapped.md.sam
+sat_dna/chang2019/dmel_scaffold2_V5.fasta
+*sam
+*bam
+*fa
+*arf

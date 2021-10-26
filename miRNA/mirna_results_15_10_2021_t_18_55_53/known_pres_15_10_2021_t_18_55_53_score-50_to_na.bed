@@ -1,0 +1,5 @@
+browser position chr3R:20735937-20735997
+browser hide all
+track name="notTrackname.known_miRNAs" description="known miRNAs detected by miRDeep2 for notTrackname" visibility=2
+itemRgb="On";
+chr3R	20735937	20735997	chr3R_1147	2.4	+	20735937	20735997	255,0,0

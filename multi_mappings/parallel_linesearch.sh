@@ -11,9 +11,9 @@ bedaf=/Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/search_beds/SRR1187
 bedag=/Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/search_beds/SRR1187947_mapped_verysensitive_local_sortedag.bed
 bedah=/Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/search_beds/SRR1187947_mapped_verysensitive_local_sortedah.bed
 
-cd /Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/42AB_test/binned_lines
+cd /Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/histone_cluster/binned_lines
 
-for linesfile in /Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/42AB_test/binned_lines/*; do 
+for linesfile in /Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/histone_cluster/binned_lines4/*; do 
 cd $linesfile 
 aalines=$linesfile/*_aa.txt
 ablines=$linesfile/*_ab.txt 
@@ -26,6 +26,7 @@ ahlines=$linesfile/*_ah.txt
 
 name=$(echo $linesfile | rev | cut -d"/" -f 1 | rev | cut -d"_" -f 1 )
 
+echo $name
 mkdir beds
 
 /Users/ryan/filterline/filterline $aalines $bedaa > beds/aa.bed & 
@@ -37,13 +38,13 @@ mkdir beds
 /Users/ryan/filterline/filterline $aglines $bedag > beds/ag.bed & 
 /Users/ryan/filterline/filterline $ahlines $bedah > beds/ah.bed
 
-cd beds
+#cd beds
 
-cat a*.bed > $name.bed 
+#cat a*.bed > $name.bed 
 
-cp $name.bed /Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/42AB_test/42AB_beds
+#cp $name.bed /Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/42AB_test/42AB_beds
 
-cd .. #Get out of bed directory
+#cd .. #Get out of bed directory
 cd .. #Get out of Lines directory
 
 done

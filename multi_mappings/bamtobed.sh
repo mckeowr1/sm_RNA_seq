@@ -1,14 +1,15 @@
 #!/bin/sh 
 
-bedtools bamtobed 
+#conda activate mappers
 
+bam=/Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/histone_cluster/histonecluster.sam
+outname=histone_cluster/histonecluster_reads.bed
 
-bedtools bamtobed -tag AS -i SRR1187947_mapped_verysensitive_local.mapped.bam > SRR1187947_mapped_verysensitive_local.mapped.bed
+bedtools bamtobed -tag AS -i $bam > $outname
 
-
-bedtools sort -i test.bed
+#edtools sort -i test.bed
 
 
 #Get a Region of interest (Cluster42AB) from the bed 
 
-bedtools intersect -a test.bed -b region.bed
+#bedtools intersect -a test.bed -b region.bed

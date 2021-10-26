@@ -2,16 +2,16 @@
 
 #Take an input bam & bed file and subsets the reads that map to a Regiong of interest 
 
-basedir=$1 #A project directory that contains a Mapped Reads file with a BAM in it (Not marked for duplicates)
-bed=$2 #A bed file that contains the regions of interest
-sam=$3 #A all reads sam file
+#basedir=$1 #A project directory that contains a Mapped Reads file with a BAM in it (Not marked for duplicates)
+bed=$1 #A bed file that contains the regions of interest
+sam=$2 #A all reads sam file
 
 #Get the name of the bead file
 roiname=$(echo $bed | cut -d. -f1)
 
-mkdir $roiname #Make a directory for the region of interest 
+#mkdir $roiname #Make a directory for the region of interest 
 
-cd $basedir
+cd histone_cluster
 
 #If we are looking for a particular strand this may not work! 
 samtools view -h -L $bed $sam > $roiname.sam
@@ -38,7 +38,7 @@ samtools view -h -L $bed $sam > $roiname.sam
 #samtools view -h -f 256 $roiname.sam > $roiname.multi_mapping.sam
 
 #Spit out a list of read names
-samtools view $roiname.multi_mapping.sam| cut -f1 | sort | uniq -u > $roiname-multimapping_read_names.txt
+samtools view $roiname.sam| cut -f1 | sort | uniq -u > $roiname-multimapping_read_names.txt
 
 
 
