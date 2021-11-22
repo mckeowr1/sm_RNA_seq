@@ -9,3 +9,11 @@ conda config --add channels conda-forge
 conda create -n mappers bowtie2
 
 conda activate mappers      
+
+#Install Bowtie
+conda install -c bioconda bowtie2
+
+#Install Bedtools
+conda install -c bioconda bedtools
+
+
