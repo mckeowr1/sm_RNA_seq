@@ -13,7 +13,7 @@ bedah=/Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/search_beds/SRR1187
 
 cd /Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/histone_cluster/binned_lines
 
-for linesfile in /Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/histone_cluster/binned_lines4/*; do 
+for linesfile in /Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/histone_cluster/binned_lines/*; do 
 cd $linesfile 
 aalines=$linesfile/*_aa.txt
 ablines=$linesfile/*_ab.txt 

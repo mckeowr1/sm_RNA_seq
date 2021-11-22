@@ -19,7 +19,7 @@ extract_out=$workingdir/extract_reads/${samplename}
 REFERENCEGFF=/Users/ryan/Documents/GitHub/sm_RNA_seq/sat_dna/wei2020/dmel_scaffold2_plus0310_rm_for_htseq.gff3
 
 
-python3 extract_sequence_by_feature_gff.py -t "bp_SAT" "$bam" "$REFERENCEGFF" "bp_SAT_trimmed.fq"
+python3 extract_sequence_by_feature_gff.py -t "GGCGAA" "$bam" "$REFERENCEGFF" "GGCGAA_trimmed.fq"
 
 
 

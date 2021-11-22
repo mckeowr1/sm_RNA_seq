@@ -6,9 +6,10 @@ dm6 = Dmelanogaster
 
 setwd("/Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/histone_cluster")
 
-
+#Function to generate a list of reads that map to the Binned ROI 
 
 generate_binned_readnames <- function(bin_size = 100, roi_readnames_bed , roi_chr, roi_start, roi_stop, proj_dir){
+  
   ## Set up the Reference Genome ## 
   bins = tileGenome(seqlengths(Dmelanogaster), tilewidth = bin_size, cut.last.tile.in.chrom = TRUE)
   bins = bins[seqnames(bins) %in% paste0('chr', c('2L','2R','3L','3R','4','X'))] # this can be commented out if you want to keep all chromosomes/contigs.
@@ -129,7 +130,7 @@ overlaps <- mergeByOverlaps(roi_t, roi_bed_clean)
 library(tidyverse)
 
 
-#
+
 df <- overlaps[c(2, 4)] %>% as.data.frame()
 
 reads_in_bin <- df %>% group_by(binID) %>% #Unlist the readnames 

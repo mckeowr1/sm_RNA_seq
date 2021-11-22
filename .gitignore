@@ -9,6 +9,7 @@ multi_mappings/42AB_Lines_test
 multi_mappings/42AB_test
 multi_mappings/42AB
 multi_mappings/search_beds
+multi_mappings/analysis/gene_multimappings
 .RData
 .RHistory
 multi_mappings/histone_cluster
