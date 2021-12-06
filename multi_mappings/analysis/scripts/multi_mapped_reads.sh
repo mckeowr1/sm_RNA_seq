@@ -12,7 +12,11 @@
 #Conda activate mappers
 
 # Get All reads that map to genomic loci
-bedtools intersect -a /Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/files/SRR1187947_mapped_verysensitive_local.mapped.bam -b FBgn0040765_roi.bed > FBgn0040765.sam 
+bedtools intersect -a /Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/files/SRR1187947_mapped_verysensitive_local.mapped.bam -b FBgn0025525_roi.bed > FBgn0025525.bam 
+
+### ! This chunk of code is only if the genomic region of interest has more than one ROI Bed 
+
+cd /Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/histone_cluster/histone_cluster_beds
 
 
 
@@ -22,13 +26,17 @@ bedtools intersect -a bin263.bed -b fbgn_0027339_roi.bed  > fbgn_0027339_histone
 
 #Process the reads into a READ_LIST_FILE 
 
+#Note that the Rcript doesn't actually take command line input ATM
 Rscript region_bams.R fbgn_0027339_histone_reads.bed
 
 
-java -jar /Applications/picard.jar FilterSamReads I=FBgn0040765.bam O=FBgn0040765.bam_histone.bam READ_LIST_FILE=FBgn0040765_histone_reads.txt FILTER=includeReadList
+java -jar /Applications/picard.jar FilterSamReads I=FBgn0025525.bam O=FBgn0025525.bam_histone.bam READ_LIST_FILE=FBgn0025525_histone_readnames.txt FILTER=includeReadList
 
 
-python3 /Users/ryan/Documents/GitHub/sm_RNA_seq/sat_dna/ping_pong/Signature.py FBgn0040765.bam 16 32 1 30 fbn_0040765_histone.piProfile.txt
+samtools sort 
+
+
+python3 /Users/ryan/Documents/GitHub/sm_RNA_seq/sat_dna/ping_pong/Signature.py FBgn0025525.bam_histone.bam 16 32 1 30 FBgn0025525_histone.piProfile.txt
 
 
 

@@ -1,8 +1,8 @@
 library(tidyverse)
 
-#This is a test script that I am hoping to develop into a way to filter through high mapping regions
+#This is a test script that I am hoping to develop into a way to filter through high mapping regions by looking at read patterns
 #Takes all the high mapping genomic bins (over some threshold) and creates a bed file for the genomic loci 
-#That bed file can then be used to subset the reads of interest
+#That bed file can then be used to subset the reads that map from one bin to a particular loci using 
 
 
 setwd("/Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/analysis")
