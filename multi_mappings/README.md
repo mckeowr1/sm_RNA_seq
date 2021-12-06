@@ -26,16 +26,16 @@ Output:
 Lines Directory
 
 
-### parallel_linesearch.sh
+`parallel_linesearch.sh`
 Runs Filterline program across all search beds https://github.com/miku/filterline (must be complied out of normal conda env)
 
 ### Cleanup 
 
-#### check_linesearch.sh 
+`check_linesearch.sh`
 This checks that all the bed folders have the right number of beds. This may not actually be that useful to keep around but it was useful during development.
 
-#### organize_beds.sh 
+`organize_beds.sh` 
 The Filterline program runs inside the lines directory for each ROI bin (ex bin1) and outputs a bed file specific to each search bed. We beed to concatentate them and move them to thier own directory for downstream analyses. 
 
-#### clean_beds.sh 
+`clean_beds.sh` 
 We also have to delete the beds that are output from the FilterLine Program this script does that. At some point they need to be combined 
