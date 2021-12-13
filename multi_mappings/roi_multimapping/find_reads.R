@@ -1,43 +1,40 @@
 library(data.table)
 library(tidyverse)
-library(feather)
-library(ggplot2)
 
 
-#Sets is the number of times you want to run the find lines c program. 
 
-find_readlines <- function(proj_dir , sets) { 
+find_reads <- function(search_bed_dir, proj_dir, bam_dir, index_file, sets){ 
+  ## Load the required files
   
-  #Load up out Index File
-  setwd("/Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/search_beds/") #Set the Directory to the loaction of the Index
-  index <- data.table::fread("SRR1187947_mapped_verysensitive_local.mapped_sorted.bedindex.tsv")
+  bin_readnames <- list.files(glue::glue("{proj_dir}/binned.readnames")) #Get the binned readnames files
   
-  bin_readnames <- list.files(glue::glue("{proj_dir}/binned.readnames"))
+  index <- data.table::fread(glue::glue("{index_file}")) #Load the index file
   
-  #Break the readnames into chunks to be run individually to not blow out computer 
+
   
-  num_bins <- lenth(bin_readnames)
   
-  set_size <- num_bins / sets
+  ## Split the files into sets 
+  set_ranges <- split(bin_readnames,    
+                      cut(seq_along(bin_readnames),
+                          sets,
+                          labels = FALSE))
   
-  set_ranges <- split(bin_readnames,          
-                       cut(seq_along(bin_readnames),
-                           set_size,
-                           labels = FALSE))
-  counter <- 0 
-  for(i in set_ranges) { 
-    counter <- counter + 1 
-    set_id <- paste("set", counter, sep = "")
-    assign(set_id, i)
-      
-  }  
-      
+  ## Search for the lines and write out lines file
+  
+  #Make a binned lines directory for the output of the function 
+  dir.create(glue::glue("{proj_dir}/binned_lines"))
+  
   get_bed_location <- function(readnamesfile, index) {
     
     #Name for the bin files
     bin_name <- str_split(readnamesfile, pattern = "_") %>% .[[1]] %>% .[1]
     
-    dir.create(glue::glue("/Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/42AB_test/binned_lines4/{bin_name}_lines"))
+    dir.create(glue::glue("{proj_dir}/binned_lines/{set_name}/{bin_name}_lines"))
+    
+    
+    #Set Working Directory to the binned lines in the project 
+    setwd(glue::glue("{proj_dir}/binned.readnames"))
+    #setwd("/Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/projects/histone_cluster/binned.readnames") #For testing
     
     #Create a Vector of readnames
     read_names<- readLines(readnamesfile)
@@ -48,143 +45,103 @@ find_readlines <- function(proj_dir , sets) {
     
     indexes <- dplyr::pull(fil_index, "index")
     
-    #Create a vector of lines where reads are loacted for bin 
+    #Create a vector of lines where reads are located for bin 
     lines <- unlist(str_split(indexes, pattern = ",")) %>%  
       as.numeric() %>%  
       base::sort()
     
-    #Now subset the lines to which file they need to be pulled from 
+    setwd(search_bed_dir)
+    num_search_beds <- length(list.files()) #Find out how many search beds have been made 
     
-    aa <- lines[lines <= 100000000]
-    ab <- lines[between(lines, 100000001 , 200000000)] - 100000000
-    ac <- lines[between(lines, 200000001 , 300000000)] - 200000000
-    ad <- lines[between(lines, 300000001 , 400000000)] - 300000000
-    ae <- lines[between(lines, 400000001 , 500000000)] - 400000000
-    af <- lines[between(lines, 500000001 , 600000000)] - 500000000
-    ag <- lines[between(lines, 600000001 , 700000000)] - 600000000
-    ah <- lines[lines >= 700000001] - 700000000
-    
-    setwd(glue::glue("/Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/42AB_test/binned_lines4/{bin_name}_lines"))
-    
-    write(aa, glue::glue("{bin_name}_aa.txt"), sep = "\n")
-    write(ab, glue::glue("{bin_name}_ab.txt"), sep = "\n")
-    write(ac, glue::glue("{bin_name}_ac.txt"), sep = "\n")
-    write(ad, glue::glue("{bin_name}_ad.txt"), sep = "\n")
-    write(ae, glue::glue("{bin_name}_ae.txt"), sep = "\n")
-    write(af, glue::glue("{bin_name}_af.txt"), sep = "\n")
-    write(ag, glue::glue("{bin_name}_ag.txt"), sep = "\n")
-    write(ah, glue::glue("{bin_name}_ah.txt"), sep = "\n")
-    
-    setwd("/Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/42AB_test/binned_readnames")
-    
-    
-    
+    #Now subset the lines to which search file they need to be pulled from 
+    for(i in 1:num_search_beds){
+      letter <- letters[i]
+      
+      
+      end <- i * 100000000
+      start <- end - 100000000  + 1
+      sub <- end - 100000000 
+      
+      
+      if(i == 1) { 
+        search_lines <- lines[lines <= 100000000]
+      }
+      if(i == max(1:num_search_beds)){ 
+        search_lines <- lines[lines >= start] - sub
+      } else
+        
+        search_lines <- lines[between(lines, start, end)] - sub
+      
+      
+      
+      
+      setwd(glue::glue("{proj_dir}/binned_lines/{set_name}/{bin_name}_lines"))
+      
+      write(search_lines, glue::glue("{bin_name}_a{letter}.txt"), sep = "\n")
+      
+      setwd(glue::glue("{proj_dir}/binned.readnames"))
+      #setwd("/Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/projects/histone_cluster/binned.readnames") #For testing
+      
+    }
   }
   
-  
-  
-  for(f in bin_readnames){ 
-    get_bed_location(f , index)
-  }
-  
-  }
-
-test <- c(1:10) 
-cut_interval(test, n =2)
-
-#Stupid function
-test_ranges <- split(test,             # Applying split() function
-      cut(seq_along(test),
-          2,
-          labels = FALSE))
-vec <- test_ranges[1][[1]]
-vec <- test_ranges[2][[1]]
-
-counter <- 0 
-for(set in test_ranges){ 
-  print(set)
-  counter <- counter + 1
-  print(counter)
-  
-  }
-
-#Set the Directory to the loaction of the Index
-setwd("/Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/search_beds/")
-
-index <- data.table::fread("SRR1187947_mapped_verysensitive_local.mapped_sorted.bedindex.tsv")
+  #Loop through all the sets
+  for(set in 1:length(set_ranges)){ 
+    set_name <- paste("set", names(set_ranges[set]), sep = "")
+    print(set_name)
+    dir.create(glue::glue("{proj_dir}/binned_lines/{set_name}"))
+    
+    for(bin in set_ranges[[set]]){
+      get_bed_location(bin, index)
+    }
+  }  
+  } 
 
 
-#Set the Directory to the Projects Binned Readnames File 
-setwd("/Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/histone_cluster/binned.readnames")
+
+find_reads( 
+  search_bed_dir = "/Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/search_beds/",
+  proj_dir = "/Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/projects/testing", 
+  bam_dir = "/Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/BAMS",
+  index_file = "/Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/BAMS/SRR1187947_mapped_verysensitive_local.mapped_sorted.bedindex.tsv", 
+  sets = 5 
+  )
 
 
-#Get a list of the binned readnames files
 
-bin_readnames <- list.files("/Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/histone_cluster/binned.readnames")
-
-set1 <- bin_readnames[1:600]
-set2 <- bin_readnames[601:1200]
-set3 <- bin_readnames[1201:1800]
-set4 <- bin_readnames[1801:2400]
-set5 <- bin_readnames[2401:2439]
-
-setwd("/Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/42AB_test/sets")
-
-writeLines(set5, "set5.txt")
-
-setwd("/Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/histone_cluster/binned.readnames")
-
-#Load up function to pull out index position
-get_bed_location <- function(readnamesfile, index) {
-  
-  #Name for the bin files
-  bin_name <- str_split(readnamesfile, pattern = "_") %>% .[[1]] %>% .[1]
-  
-  dir.create(glue::glue("/Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/histone_cluster/binned_lines/{bin_name}_lines"))
-  
-  #Create a Vector of readnames
-  read_names<- readLines(readnamesfile)
-  
-  
-  #Filter the index to reads
-  fil_index<- index %>% dplyr::filter(V4 %in% read_names)
-  
-  indexes <- dplyr::pull(fil_index, "index")
-  
-  #Create a vector of lines where reads are loacted for bin 
-  lines <- unlist(str_split(indexes, pattern = ",")) %>%  
-    as.numeric() %>%  
-    base::sort()
-  
-  #Now subset the lines to which file they need to be pulled from 
-  
-  aa <- lines[lines <= 100000000]
-  ab <- lines[between(lines, 100000001 , 200000000)] - 100000000
-  ac <- lines[between(lines, 200000001 , 300000000)] - 200000000
-  ad <- lines[between(lines, 300000001 , 400000000)] - 300000000
-  ae <- lines[between(lines, 400000001 , 500000000)] - 400000000
-  af <- lines[between(lines, 500000001 , 600000000)] - 500000000
-  ag <- lines[between(lines, 600000001 , 700000000)] - 600000000
-  ah <- lines[lines >= 700000001] - 700000000
-  
-  setwd(glue::glue("/Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/histone_cluster/binned_lines/{bin_name}_lines"))
-  
-  write(aa, glue::glue("{bin_name}_aa.txt"), sep = "\n")
-  write(ab, glue::glue("{bin_name}_ab.txt"), sep = "\n")
-  write(ac, glue::glue("{bin_name}_ac.txt"), sep = "\n")
-  write(ad, glue::glue("{bin_name}_ad.txt"), sep = "\n")
-  write(ae, glue::glue("{bin_name}_ae.txt"), sep = "\n")
-  write(af, glue::glue("{bin_name}_af.txt"), sep = "\n")
-  write(ag, glue::glue("{bin_name}_ag.txt"), sep = "\n")
-  write(ah, glue::glue("{bin_name}_ah.txt"), sep = "\n")
-  
-  setwd("/Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/histone_cluster/binned.readnames")
-  
-  
-  
-}
+## For Troubleshootin ##
 
 
-for(f in bin_readnames){ 
-  get_bed_location(f , index)
-}
+#Function Inputs
+
+# search_bed_dir <- c("/Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/search_beds/")
+# 
+# #proj_dir <- c("/Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/projects/testing")
+# proj_dir <- c("/Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/projects/histone_cluster")
+# 
+# 
+# bam_dir <- c("/Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/BAMS")
+# 
+# index_file <- c("/Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/BAMS/SRR1187947_mapped_verysensitive_local.mapped_sorted.bedindex.tsv")
+# 
+# sets <- 5
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
