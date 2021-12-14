@@ -73,7 +73,7 @@ This scripts takes the ROI binned beds with thier other reads locations and plot
                           proj_dir = "~multi_mappings/projects/ROI")
     ````
     
-7) Now that we have our `binned.readnames` file we want to get all of the locations of those reads. To do that we use the `bedindex.tsv` that we created when we processed our multimapping BAM and the `find_reads.R` script. Sets is how many times you plan on running the `parallel_linesearch.sh` program that proceeds this script. Breaking the program into multuiple sets can be good since I'm not sure what the limit of the computer is. I have done it all in one set though. 
+7) Now that we have our `binned.readnames` file we want to get all of the locations of those reads. To do that we use the `bedindex.tsv` that we created when we processed our multimapping BAM and the `find_reads.R` script. The Sets parameter is how many times you plan on running the `parallel_linesearch.sh` program in step 8. Breaking the program into multuiple sets can be good since I'm not sure what the limit of the computer is. Though I did end up doing the histone cluster in one set. Set the following parameters in in R script and run the function. 
 
     ````
     find_reads( 
@@ -85,8 +85,108 @@ This scripts takes the ROI binned beds with thier other reads locations and plot
     )
 
     ````
+    This script will spit out a new directory in your project dir called `binned_lines`. Within `binned_lines` there will be a number of set directories ex `set1` based on however many sets you specified in the `find_reads.R` script. Each set contains a directory for each bin within the set. ex `bin1_lines`. Within the directory for that bin are text files that contain the lines for a particular search file. 
 
-8) 
+    ````
+   
+    ├── binned_lines
+        ├── set1
+            ├── bin1_lines
+                ├── bin1_aa.txt 
+                ├── bin1_ab.txt
+                ├── bin1_ac.txt 
+                ├── ... 
+            ├── bin2_lines
+
+    ````
+    
+
+8) We now can search for our reads! To do this we'll use the `parallel_linesearch.sh`. This script uses a C program called `filterline` to filter our search beds by line number extremely quickly (much faster than awk). To install filterline switch to your desired installation directory and run the following commands:
+    ````
+    #switch to install directory 
+
+    cd path/to/install/dir
+
+    #Clone and compile the repo 
+
+    git clone https://github.com/miku/filterline.git
+    cd filterline
+    make
+    
+    ````
+    The filterline program takes two inputs. 1) A file with the line numbers you wish to return and 2) a file you wish to pull those lines from.
+    ````
+    path/to/install/dir/filterline lines_file search_file
+
+    ````
+    We want to search through lots of files at the same time so we spin up a bunch of instances of this search program using the `parallel_linesearch.sh` script. At the moment this script has to be manually updated for each search we want to perform (working on a better function). There are 2 things that need to be edited. 
+    
+    1st edit the paths to the search_beds and the lines_directory
+    ````
+    search_path=~/multimappings/search_beds
+    
+    lines_dir=~/multimappings/projects/your_roi/binned_lines/set1
+    
+    ````
+    
+
+    2nd edit the `filterline` path to your install directory
+
+    ````
+
+    /Users/ryan/filterline/filterline
+
+    ````
+
+    If you have more than 8 search beds make sure to define an additional search_bed, lines file, and search program.
+
+    Once all the changes are made and saved then you should be ready to run the program. It's best to run overnight while you won't be using your computer. To run the program execute the following command.
+
+    ````
+    $ bash parallel_linesearch.sh
+
+    ````
+    When we come back a few hours later, the file search should be complete. I like to verify that no more `filterline` programs are running by opening activity monitor on mac OS and searching for filterline. If any processes are still running, give it a few more hours. If they are still going after that, there was probably an error and the program has spun out (this has never happened). 
+
+    This program will add a new folder `beds` to each `bin*_lines` folder.
+    ````
+    ├── binned_lines
+        ├── set1
+            ├── bin1_lines
+                ├── beds 
+                    ├── aa.bed
+                    ├── ab.bed
+                    ├── ac.bed
+                    ├── ... 
+                ├── bin1_aa.txt 
+                ├── bin1_ab.txt
+                ├── bin1_ac.txt 
+                ├── ... 
+            ├── bin2_lines
+    ````
+
+9) Now we should have a bunch of small bed files for each bin that contain the read ID and and the locations that its mapped across the genome. We want to clean up this directory structure a bit to make it easier to work with. To do this we'll use the `organize_beds.sh` script. This program goes into each line directory and concatenates all the beds. Then it move them to an output directory of your choosing. Best practice would be within your project directory ex) `~/multimappings/projects/your_projects/roi_beds`. Similar to the `parallel_linesearch.sh` script we have to update two variables manually. 
+    ````
+    lines_dir=~/multimappings/projects/your_project/binned_lines/set1
+    out_dir=~/multimappings/projects/your_project/roi_beds
+    ````
+    Now our directory structure should look like this
+
+    ````
+    ├── binned_lines
+        ├── set1
+            ├── bin1_lines
+                ├── beds 
+                ├── bin1_aa.txt 
+                ├── bin1_ab.txt
+                ├── bin1_ac.txt 
+                ├── ... 
+    ├── roi_beds
+        ├── binned_lines
+
+    ````
+
+
 
 
 
