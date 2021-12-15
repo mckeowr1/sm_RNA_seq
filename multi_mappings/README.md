@@ -45,6 +45,30 @@ We also have to delete the beds that are output from the FilterLine Program this
 `plot_multimappers.R` 
 This scripts takes the ROI binned beds with thier other reads locations and plots them as a matrix.
 
+# Set up local environments 
+Things that need to go into the environment:
+- bedtools
+
+To get bedtools program we need to create a conda environment
+```
+#Put Channels In the Right order for Bioconda
+conda config --add channels defaults
+conda config --add channels bioconda
+conda config --add channels conda-forge
+
+#Create the environment
+conda create -n myenv
+
+#Activate the environment
+conda activate myenv
+
+#Install Bedtools
+conda install -c bioconda bedtools
+
+```
+For all subsequent steps we need to have bedtools. Make sure the environment is active when
+
+
 # Process Multimapping SAM
 This section describes how to create a database from a multimapped BAM file. This is a relatively simple process however, its computationally intensive so at the moment these steps have to be performed on Quest or another compute cluster. All scripts for this section are found in the `process_multimapping` directory.
 
@@ -54,22 +78,22 @@ This section describes how to create a database from a multimapped BAM file. Thi
 
 3) The final step is to create search beds to optimize the search for reads in later steps. This is done by using the UNIX command `split`. It is crucial to note the number you use for the lines parameter since this is will affect the `find_reads.R` script later on. `split_bed.sh` is a slurm script to split your bed file into 100000000 files. 
 
-# Workflow 
+# Analyze an ROI
 1) Clone the github repo 
 
-2) Move your multimapped BAM file, it's indexs `.bai` and index created in process_multimapping steps to the BAMS file
+2) Move your multimapped BAM file, it's indexes `.bai` and index created in process_multimapping steps to the BAMS file
 
 3) Within the multimappings folder there is a projects directory. Within projects create a file for the ROI you wish to analyze (ex. Histone Cluster). 
 
 4) Create a bed file using the template.bed file in the projects directory. Edit the genomic coordinates to your ROI. Save the file with the name of your ROI. ex) `histonecluster.bed` Move the bed file into your project dir. 
 
-5) Run `regions_multi_mappers.sh`. The first command line arument for this script is the directory that contains your multimapped BAM files. The second argument is the path to your ROI.bed file. 
+5) Run `regions_multi_mappers.sh`. The first command line argument for this script is the directory that contains your multimapped BAM files. The second argument is the path to your ROI.bed file. 
 
     ````
     regions_multi_mappers.sh path/to/multimapped/bams ~/multi_mappings/projects/your_roi/roi.bed    
 
     ````
-6) The above step should sucessfuly create a `ROI.bam` file along with a `ROI_reads.bed` file. This is a reduced verison of the BAM file that was also created. Now that we have this bed file, we want to break it into bins using the `bin_roi.R` script. Load the function `generate_binned_readnames()` and set the working directory to your project directory. This will create the `binned.readnames` directory in your ROI folder. 
+6) The above step should successfully create a `ROI.bam` file along with a `ROI_reads.bed` file. This is a reduced version of the BAM file that was also created. Now that we have this bed file, we want to break it into bins using the `bin_roi.R` script. Load the function `generate_binned_readnames()` and set the working directory to your project directory. This will create the `binned.readnames` directory in your ROI folder. 
     ````
     setwd("/Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/histone_cluster")
     
