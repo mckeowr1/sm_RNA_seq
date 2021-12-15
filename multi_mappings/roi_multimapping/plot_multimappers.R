@@ -1,4 +1,4 @@
--library(GenomicAlignments)
+library(GenomicAlignments)
 library(BSgenome.Dmelanogaster.UCSC.dm6)
 library(data.table)
 library(cowplot)
