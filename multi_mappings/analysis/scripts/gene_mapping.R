@@ -62,7 +62,7 @@ hist_matrix <- data.table::fread("histone_cluster_meltedmatrix.tsv")
 
 ## Start for gene loop here ##
 
-#make a granges for a high mapping histone cluster region - bin260
+#make a granges for a high mapping histone cluster region - bin260  (This was for testing)
 high=GRanges(seqnames =c("chr2L"), 
              ranges=IRanges(start =c(10900001), end=c(11000000)))
 
