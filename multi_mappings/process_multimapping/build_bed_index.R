@@ -1,18 +1,15 @@
 library(data.table)
 library(tidyverse)
 
+df <- data.table::fread("/path/to/bed_file") #Add path to bed file
 
+build_bed_index <- function(bed, name){ 
+  df <- rownames_to_column(bed) 
 
-
-df <- data.table::fread("SRR1187947_mapped_verysensitive_local.mapped.bed", select = c("V4"))  
-
-df2 <- rownames_to_column(df)
-
-
-df3 <- group_by(df2, V4) %>%  
+  read_key <- group_by(df, V4) %>%  
   summarise(index = paste0(as.character(rowname), collapse = ","))
 
+  write_tsv(read_key, glue::glue("{name}.bedindex.tsv"))
+}
 
-dplyr::filter(df3, V4 == "SRR1187947.9999995") 
-#Each read that is aligned is accounted for! 
-write_tsv(df3, "SRR1187947_mapped_verysensitive_local.mapped.bedindex.tsv")
+build_bed_index(bed = df, name = ROI) 

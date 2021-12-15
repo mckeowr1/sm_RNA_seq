@@ -35,7 +35,7 @@ Runs Filterline program across all search beds https://github.com/miku/filterlin
 This checks that all the bed folders have the right number of beds. This may not actually be that useful to keep around but it was useful during development.
 
 `organize_beds.sh` 
-The Filterline program runs inside the lines directory for each ROI bin (ex bin1) and outputs a bed file specific to each search bed. We beed to concatentate them and move them to thier own directory for downstream analyses. 
+The Filterline program runs inside the lines directory for each ROI bin (ex bin1) and outputs a bed file specific to each search bed. We beed to concatentate them and move them to their own directory for downstream analyses. 
 
 `clean_beds.sh` 
 We also have to delete the beds that are output from the FilterLine Program this script does that. At some point they need to be combined 
@@ -45,6 +45,14 @@ We also have to delete the beds that are output from the FilterLine Program this
 `plot_multimappers.R` 
 This scripts takes the ROI binned beds with thier other reads locations and plots them as a matrix.
 
+# Process Multimapping SAM
+This section describes how to create a database from a multimapped BAM file. This is a relatively simple process however, its computationally intensive so at the moment these steps have to be performed on Quest or another compute cluster. All scripts for this section are found in the `process_multimapping` directory.
+
+1) The first step is to convert your BAM file to a BED file using the bedtools function `bamtobed` and then to sort the file using the bedtools function `sort` which sorts by chromosome and start position. The file `process_multimapping.sh` contains a slurm script to perform these two steps on Quest.
+
+2) Next you want to build a read key from the bed file. This is just a TSV that contains the line number for each read in the bed file. This is built using the `build_bed_index.R` script. To use the script update the path to your bed file. Then call the `build_bed_index()` function. This should generate a large index file for your beds. 
+
+3) The final step is to create search beds to optimize the search for reads in later steps. This is done by using the UNIX command `split`. It is crucial to note the number you use for the lines parameter since this is will affect the `find_reads.R` script later on. `split_bed.sh` is a slurm script to split your bed file into 100000000 files. 
 
 # Workflow 
 1) Clone the github repo 
@@ -212,7 +220,7 @@ To look for multimapping in a list of genes or transcripts we use the script `mu
 
 5) Then we compare the bins that the gene overlaps to the bins that histone cluster reads map to.
 
-### Useage
+### Usage
 ````
 check_gene_overlaps(gene_list = test_genes, 
                     feature_type = "transcript", 
@@ -221,3 +229,4 @@ check_gene_overlaps(gene_list = test_genes,
                     pad_gene = T, 
                     pad_size = 2000) # 1000 bp is added to start and end 
 ````
+The function will return a dataframe with the name of each gene in the list and the number of 20bp gene bins that also have multimapped reads from the ROI.
