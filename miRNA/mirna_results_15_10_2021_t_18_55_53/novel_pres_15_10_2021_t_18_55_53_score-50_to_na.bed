@@ -1,5 +1,0 @@
-browser position 
-browser hide all
-track name="notTrackname.novel_miRNAs" description="novel miRNAs detected by miRDeep2 for notTrackname" visibility=2
-itemRgb="On";
-chr2L	19613287	19613365	chr2L_245	0.6	-	19613287	19613365	0,0,255
