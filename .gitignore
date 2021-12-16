@@ -2,7 +2,6 @@
 SRR1187947
 SRR1187947_map_qual1.wig
 bowtie_performance_checks
-GAGA_Repeats
 multi_mappings/files
 multi_mappings/42AB_Lines
 multi_mappings/42AB_Lines_test
@@ -22,8 +21,13 @@ sat_dna/chang2019/dmel_scaffold2_V5.fasta
 *bam
 *fa
 *arf
+*.gz
 multi_mappings/projects/42AB
 multi_mappings/projects/histone_cluster
 multi_mappings/BAMS
 multi_mappins/annotation_data
 multi_mappings/projects/testing
+
+GAGA_Repeats/raw_data/SRR1187947_AAGAG.fastq 
+GAGA_Repeats/raw_data/SRR1187947_AAGAGAAGAG.fastq 
+GAGA_Repeats/raw_data/SRR1187947.fastq

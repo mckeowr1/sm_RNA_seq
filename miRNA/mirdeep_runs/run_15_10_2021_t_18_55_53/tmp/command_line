@@ -1,1 +1,0 @@
-miRDeep2_core_algorithm.pl mirdeep_runs/run_15_10_2021_t_18_55_53/tmp/signature.arf mirdeep_runs/run_15_10_2021_t_18_55_53/tmp/precursors.str -v -50 -y mirdeep_runs/run_15_10_2021_t_18_55_53/tmp/precursors_for_randfold.rand > mirdeep_runs/run_15_10_2021_t_18_55_53/output.mrd
