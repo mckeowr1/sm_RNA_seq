@@ -24,10 +24,14 @@ sat_dna/chang2019/dmel_scaffold2_V5.fasta
 *.gz
 multi_mappings/projects/42AB
 multi_mappings/projects/histone_cluster
-multi_mappings/BAMS
 multi_mappins/annotation_data
 multi_mappings/projects/testing
 
 GAGA_Repeats/raw_data/SRR1187947_AAGAG.fastq 
 GAGA_Repeats/raw_data/SRR1187947_AAGAGAAGAG.fastq 
 GAGA_Repeats/raw_data/SRR1187947.fastq
+multi_mappings/BAMS/SRR1187947_mapped_verysensitive_local.mapped_sorted.bed
+Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/BAMS/SRR1187947_mapped_verysensitive_local.mapped_sorted.bed
+Users/ryan/Documents/GitHub/sm_RNA_seq/multi_mappings/BAMS/SRR1187947_mapped_verysensitive_local.mapped.bed
+multi_mappings/BAMS/SRR1187947_mapped_verysensitive_local.mapped_sorted.bedindex.tsv
+multi_mappings/BAMS/SRR1187947_mapped_verysensitive_local.mapped.bed
