@@ -1,50 +1,3 @@
-# Scripts
-
-#### process_multimapping
-
-### roi_multimapping
-This section contains information about the scripts used to analyze multimappings in a particular ROI (ex Histone Cluster). They are listed in the order they are used.
-
-`region_multi_mappers.sh`
-Takes an input multimapped BAM file and A ROI Bed (ex chr2R 10 1000) and returns a 
-bam file for just that region of interest. Also, can return a list of reads that map to ROI. Uses samtools.
-
-`bamtobed.sh`
-Takes an ROI bam and returns a bed file for that region
-
-`bin_roi.R`
-Takes the ROI bed file, and bins the region of interest. Then Returns a list of readnames for each bin. These readnames are stored in the file binned.readnames in the project directory. Ex) bin1_readnames.txt
-
-`find_reads.R`
-Pulls the line location of a list of reads 
-
-Inputs: 
-Sorted Bed Index 
-Directory with readnames text files
-
-Output:
-Lines Directory
-
-
-`parallel_linesearch.sh`
-Runs Filterline program across all search beds https://github.com/miku/filterline (must be complied out of normal conda env)
-
-### Cleanup 
-
-`check_linesearch.sh`
-This checks that all the bed folders have the right number of beds. This may not actually be that useful to keep around but it was useful during development.
-
-`organize_beds.sh` 
-The Filterline program runs inside the lines directory for each ROI bin (ex bin1) and outputs a bed file specific to each search bed. We beed to concatentate them and move them to their own directory for downstream analyses. 
-
-`clean_beds.sh` 
-We also have to delete the beds that are output from the FilterLine Program this script does that. At some point they need to be combined 
-
-### Analysis 
-
-`plot_multimappers.R` 
-This scripts takes the ROI binned beds with thier other reads locations and plots them as a matrix.
-
 # Set up local environments 
 Things that need to go into the environment:
 - bedtools
@@ -76,16 +29,67 @@ This section describes how to create a database from a multimapped BAM file. Thi
 
 2) Next you want to build a read key from the bed file. This is just a TSV that contains the line number for each read in the bed file. This is built using the `build_bed_index.R` script. To use the script update the path to your bed file. Then call the `build_bed_index()` function. This should generate a large index file for your beds. 
 
-3) The final step is to create search beds to optimize the search for reads in later steps. This is done by using the UNIX command `split`. It is crucial to note the number you use for the lines parameter since this is will affect the `find_reads.R` script later on. `split_bed.sh` is a slurm script to split your bed file into 100000000 files. 
+3) The final step is to create search beds to optimize the search for reads in later steps. This is done by using the UNIX command `split`. It is crucial to note the number you use for the lines parameter since this is will affect the `find_reads.R` script later on. `split_bed.sh` is a slurm script to split your bed file into 100000000 lines per file. 
 
 # Analyze an ROI
+All scripts to analyze an ROI are found in the `roi_multimapping` directory
 1) Clone the github repo 
+    ````
+    git clone https://github.com/mckeowr1/sm_RNA_seq.git
+    ````
+2) Move your multimapped BAM file, and it's index ato the BAMS file. Also move the files created in step 3 to search beds.
+    ````
+    ├── multi_mappings
+        ├── analysis
+        ├── BAMS
+            ├── your_multimapped_file.bam 
+            ├── your_multimapped_file.bai
+            ├── your_multimapped_file.bed 
+            ├── your_multimapped_file_bed_index.tsv 
+        ├── process_multimapping 
+        ├── projects
+        ├── roi_multimapping
+        ├── search_beds 
+            ├── your_multimapped_file_aa.bed
+            ├── your_multimapped_file_ab.bed
+            ├── ...
+                  
+    ````
 
-2) Move your multimapped BAM file, it's indexes `.bai` and index created in process_multimapping steps to the BAMS file
-
-3) Within the multimappings folder there is a projects directory. Within projects create a file for the ROI you wish to analyze (ex. Histone Cluster). 
+3) Within projects create a file for the ROI you wish to analyze (ex. Histone Cluster). 
+    ````
+    ├── multi_mappings
+        ├── analysis
+        ├── BAMS
+            ├── your_multimapped_file.bam 
+            ├── your_multimapped_file.bai
+            ├── your_multimapped_file.bed 
+            ├── your_multimapped_file_bed_index.tsv 
+        ├── process_multimapping 
+        ├── projects
+            ├── your_roi
+            ├── template.bed
+        ├── roi_multimapping
+        ├── search_beds           
+    ````
 
 4) Create a bed file using the template.bed file in the projects directory. Edit the genomic coordinates to your ROI. Save the file with the name of your ROI. ex) `histonecluster.bed` Move the bed file into your project dir. 
+    ````
+    ├── multi_mappings
+        ├── analysis
+        ├── BAMS
+            ├── your_multimapped_file.bam 
+            ├── your_multimapped_file.bai
+            ├── your_multimapped_file.bed 
+            ├── your_multimapped_file_bed_index.tsv 
+        ├── process_multimapping 
+        ├── projects
+            ├── your_roi
+                ├── your_roi.bed
+            ├── template.bed
+        ├── roi_multimapping
+        ├── search_beds           
+    ````
 
 5) Run `regions_multi_mappers.sh`. The first command line argument for this script is the directory that contains your multimapped BAM files. The second argument is the path to your ROI.bed file. 
 
@@ -103,6 +107,16 @@ This section describes how to create a database from a multimapped BAM file. Thi
                           roi_start = 21415940, 
                           roi_stop = 21543673, 
                           proj_dir = "~multi_mappings/projects/ROI")
+    ````   
+    The directory should now look like this: 
+    ````
+        ├── projects
+            ├── your_roi
+                ├── binned.readnames
+                ├── your_roi.bed
+            ├── template.bed
+        ├── roi_multimapping
+        ├── search_beds   
     ````
     
 7) Now that we have our `binned.readnames` file we want to get all of the locations of those reads. To do that we use the `bedindex.tsv` that we created when we processed our multimapping BAM and the `find_reads.R` script. The Sets parameter is how many times you plan on running the `parallel_linesearch.sh` program in step 8. Breaking the program into multuiple sets can be good since I'm not sure what the limit of the computer is. Though I did end up doing the histone cluster in one set. Set the following parameters in in R script and run the function. 
@@ -120,15 +134,18 @@ This section describes how to create a database from a multimapped BAM file. Thi
     This script will spit out a new directory in your project dir called `binned_lines`. Within `binned_lines` there will be a number of set directories ex `set1` based on however many sets you specified in the `find_reads.R` script. Each set contains a directory for each bin within the set. ex `bin1_lines`. Within the directory for that bin are text files that contain the lines for a particular search file. 
 
     ````
-   
-    ├── binned_lines
-        ├── set1
-            ├── bin1_lines
-                ├── bin1_aa.txt 
-                ├── bin1_ab.txt
-                ├── bin1_ac.txt 
-                ├── ... 
-            ├── bin2_lines
+    ├── projects
+    ├── your_roi
+        ├── binned.readnames
+        ├── your_roi.bed
+        ├── binned_lines
+            ├── set1
+                ├── bin1_lines
+                    ├── bin1_aa.txt 
+                    ├── bin1_ab.txt
+                    ├── bin1_ac.txt 
+                    ├── ... 
+                ├── bin2_lines
 
     ````
     
@@ -254,3 +271,50 @@ check_gene_overlaps(gene_list = test_genes,
                     pad_size = 2000) # 1000 bp is added to start and end 
 ````
 The function will return a dataframe with the name of each gene in the list and the number of 20bp gene bins that also have multimapped reads from the ROI.
+
+# Scripts
+
+#### process_multimapping
+
+### roi_multimapping
+This section contains information about the scripts used to analyze multimappings in a particular ROI (ex Histone Cluster). They are listed in the order they are used.
+
+`region_multi_mappers.sh`
+Takes an input multimapped BAM file and A ROI Bed (ex chr2R 10 1000) and returns a 
+bam file for just that region of interest. Also, can return a list of reads that map to ROI. Uses samtools.
+
+`bamtobed.sh`
+Takes an ROI bam and returns a bed file for that region
+
+`bin_roi.R`
+Takes the ROI bed file, and bins the region of interest. Then Returns a list of readnames for each bin. These readnames are stored in the file binned.readnames in the project directory. Ex) bin1_readnames.txt
+
+`find_reads.R`
+Pulls the line location of a list of reads 
+
+Inputs: 
+Sorted Bed Index 
+Directory with readnames text files
+
+Output:
+Lines Directory
+
+
+`parallel_linesearch.sh`
+Runs Filterline program across all search beds https://github.com/miku/filterline (must be complied out of normal conda env)
+
+### Cleanup 
+
+`check_linesearch.sh`
+This checks that all the bed folders have the right number of beds. This may not actually be that useful to keep around but it was useful during development.
+
+`organize_beds.sh` 
+The Filterline program runs inside the lines directory for each ROI bin (ex bin1) and outputs a bed file specific to each search bed. We beed to concatentate them and move them to their own directory for downstream analyses. 
+
+`clean_beds.sh` 
+We also have to delete the beds that are output from the FilterLine Program this script does that. At some point they need to be combined 
+
+### Analysis 
+
+`plot_multimappers.R` 
+This scripts takes the ROI binned beds with thier other reads locations and plots them as a matrix.
